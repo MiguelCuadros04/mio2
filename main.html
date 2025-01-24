@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidador de Honorarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        input {
+            width: 90%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        .input-group {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: calc(100% - 160px);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Liquidador de Honorarios</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Cuotas</th>
+            <th>Honorarios (%)</th>
+            <th>IVA (%)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="number" id="numCuotas" min="1" value="1"></td>
+            <td><input type="number" id="honorarios" step="0.01" value="5"></td>
+            <td><input type="number" id="iva" step="0.01" value="19"></td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="input-group">
+    <label for="numeroCredito">Credito:</label>
+    <input type="text" id="numeroCredito" placeholder="Ingrese el credito">
+</div>
+<div class="input-group">
+    <label for="nombreCliente">Nombre:</label>
+    <input type="text" id="nombreCliente" placeholder="Ingrese el nombre">
+</div>
+
+<button onclick="generateTable()">Generate Table</button>
+
+<table id="tabla">
+    <thead>
+        <tr>
+            <th>Cuota</th>
+            <th>Valor Cuota</th>
+            <th>Honorarios (%)</th>
+            <th>Valor Honorarios</th>
+            <th>IVA (%)</th>
+            <th>Valor IVA</th>
+            <th>Total Honorarios</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    function generateTable() {
+        const numCuotas = parseInt(document.getElementById('numCuotas').value);
+        const honorariosPercentage = parseFloat(document.getElementById('honorarios').value);
+        const ivaPercentage = parseFloat(document.getElementById('iva').value);
+
+        const numeroCredito = document.getElementById('numeroCredito').value;
+        const nombreCliente = document.getElementById('nombreCliente').value;
+
+        const tableBody = document.getElementById('tabla').querySelector('tbody');
+        tableBody.innerHTML = '';
+
+        for (let i = 1; i <= numCuotas; i++) {
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${i}</td>
+                <td><input type="number" class="installmentValue" step="0.01" value="0" oninput="updateRow(this)"></td>
+                <td>${honorariosPercentage}%</td>
+                <td class="valorHonorarios">0.00</td>
+                <td>${ivaPercentage}%</td>
+                <td class="valorIVA">0.00</td>
+                <td class="totalHonorarios">0.00</td>
+                <td class="total">0.00</td>
+            `;
+
+            tableBody.appendChild(row);
+        }
+
+        console.log(`Credit Number: ${numeroCredito}, Name: ${nombreCliente}`);
+    }
+
+    function updateRow(input) {
+        const row = input.closest('tr');
+        const installmentValue = parseFloat(input.value) || 0;
+        const honorariosPercentage = parseFloat(document.getElementById('honorarios').value);
+        const ivaPercentage = parseFloat(document.getElementById('iva').value);
+
+        const valorHonorarios = (installmentValue * honorariosPercentage) / 100;
+        const valorIVA = (valorHonorarios * ivaPercentage) / 100;
+        const totalHonorarios = valorHonorarios + valorIVA;
+        const total = installmentValue + totalHonorarios;
+
+        row.querySelector('.valorHonorarios').textContent = valorHonorarios.toFixed(2);
+        row.querySelector('.valorIVA').textContent = valorIVA.toFixed(2);
+        row.querySelector('.totalHonorarios').textContent = totalHonorarios.toFixed(2);
+        row.querySelector('.total').textContent = total.toFixed(2);
+    }
+</script>
+
+</body>
+</html>
